@@ -171,3 +171,48 @@ button:disabled{
     padding:9px;
   }
 }
+
+.topnav{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #111;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.topnav a{
+  color: #fff;
+  text-decoration: none;
+  font-family: "Noto Sans Bengali", system-ui, sans-serif;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.topnav a:hover{ opacity: 1; }
+
+.topnav .brand{
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.topnav .links{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.topnav .links a{
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.topnav .links a.active{
+  background: rgba(255,255,255,0.14);
+}
+
