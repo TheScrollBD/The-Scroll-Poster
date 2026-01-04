@@ -3,40 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>News Template</title>
+  <title>Divider - The Scroll</title>
 
-  <!-- Google Font (Variable weights 100–900) -->
+  <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./divider.css" />
 </head>
 
 <body>
 
   <nav class="topnav">
-  <a class="brand" href="index.html">THE SCROLL</a>
-
-  <div class="links">
-    <a href="index.html">Home</a>
-    <a href="Quote.html">Quote</a>
-    <a href="divider.html">divider</a>
-  </div>
-</nav>
-
+    <a class="brand" href="index.html">THE SCROLL</a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="Quote.html">Quote</a>
+      <a href="divider.html" class="active">Divider</a>
+    </div>
+  </nav>
 
   <!-- ===== CONTROLS ===== -->
   <div class="controls">
-    <textarea id="headlineInput" rows="4">৩১ ডিসেম্বর থেকে ২ জানুয়ারি পর্যন্ত ঢাকায় রাষ্ট্রীয় শোক —
-এই সময় [[আতশবাজি]] ও {r:আকাশলণ্ঠন} {b:নিষিদ্ধ}।</textarea>
+    <textarea id="headlineInput" rows="4">Sikhs for Justice announces
+{r:Tk 55 lakh reward} [[for Info]]
+on Hadi’s Killers</textarea>
 
     <input type="text" id="sourceTailInput" value="The Business Standard" />
-    <input type="file" id="imageInput" accept="image/*" />
+
+    <!-- 2 image inputs -->
+    <label class="lbl">Left Image</label>
+    <input type="file" id="imageLeftInput" accept="image/*" />
+
+    <label class="lbl">Right Image</label>
+    <input type="file" id="imageRightInput" accept="image/*" />
+
     <button id="downloadBtn" type="button">Download PNG</button>
   </div>
 
-  <!-- ===== RESPONSIVE PREVIEW STAGE ===== -->
+  <!-- ===== PREVIEW ===== -->
   <div class="stage">
     <div id="template">
 
@@ -49,10 +55,13 @@
         </div>
       </div>
 
+      <!-- ✅ IMPORTANT: app.js uses #headline, so keep it exactly -->
       <div class="headline" id="headline"></div>
 
+      <!-- ✅ 2 image smooth transition -->
       <div class="image-box">
-        <img id="mainImage" src="./assets/placeholder.png" alt="Main" />
+        <img id="imgLeft" class="img-layer left" src="./assets/left.jpg" alt="Left" />
+        <img id="imgRight" class="img-layer right" src="./assets/right.jpg" alt="Right" />
       </div>
 
       <div class="footer">
@@ -62,9 +71,72 @@
     </div>
   </div>
 
-  <!-- IMPORTANT: Library first, then app.js -->
   <script src="./vendor/html-to-image.js"></script>
-  <script src="./app.js"></script>
 
+  <!-- divider page JS (works with your markup parser too) -->
+  <script>
+    // ========= same markup parser =========
+    function escapeHtml(str) {
+      return str
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function parseMarkup(raw) {
+      let s = escapeHtml(raw);
+      s = s.replaceAll('\n', '<br>');
+      s = s.replace(/\[\[([\s\S]+?)\]\]/g, '<span class="hl-yellow">$1</span>');
+      s = s.replace(/\{r:([\s\S]+?)\}/g, '<span class="hl-red">$1</span>');
+      s = s.replace(/\{b:([\s\S]+?)\}/g, '<span class="hl-blue">$1</span>');
+      return s;
+    }
+
+    // ========= headline + source =========
+    const headlineInput = document.getElementById('headlineInput');
+    const headlineEl = document.getElementById('headline');
+    function updateHeadline(){ headlineEl.innerHTML = parseMarkup(headlineInput.value); }
+    headlineInput.addEventListener('input', updateHeadline);
+    updateHeadline();
+
+    const sourceTailInput = document.getElementById('sourceTailInput');
+    const sourceTail = document.getElementById('sourceTail');
+    function updateSource(){ sourceTail.textContent = sourceTailInput.value || ""; }
+    sourceTailInput.addEventListener('input', updateSource);
+    updateSource();
+
+    // ========= image loaders =========
+    function setImageFromFile(inputEl, imgEl){
+      inputEl.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if(!file) return;
+        const url = URL.createObjectURL(file);
+        imgEl.src = url;
+      });
+    }
+
+    setImageFromFile(document.getElementById('imageLeftInput'), document.getElementById('imgLeft'));
+    setImageFromFile(document.getElementById('imageRightInput'), document.getElementById('imgRight'));
+
+    // ========= download =========
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', async () => {
+      const node = document.getElementById('template');
+
+      // wait a frame to ensure images painted
+      await new Promise(r => requestAnimationFrame(r));
+
+      htmlToImage.toPng(node, { pixelRatio: 2 })
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = 'divider-template.png';
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch(err => console.error(err));
+    });
+  </script>
 </body>
 </html>
