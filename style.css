@@ -67,11 +67,11 @@ body{
 
 /* ===== HEADLINE ===== */
 .headline{
+  background-image: url("./assets/dots.png");
   font-family: var(--bn-font);
   font-optical-sizing: auto;
-  font-weight: 800;
+  font-weight: 600;
   font-style: normal;
-
   padding:36px 32px;
   font-size:60px;
   line-height:1.25;
@@ -79,7 +79,7 @@ body{
 }
 
 .hl-yellow{ background:yellow; padding:0 6px; border-radius:6px; }
-.hl-red{ color:#d40000; font-weight:900; }
+.hl-red{ color:#ec0000; font-weight:900; }
 .hl-blue{ color:#0a2cff; font-weight:900; }
 
 /* ===== IMAGE AREA ===== */
@@ -229,7 +229,6 @@ button:disabled{
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("./assets/dots.png");
   background-repeat: repeat;
   background-size: 220px auto; /* dots density */
   opacity: 0.18;               /* dots visibility */
