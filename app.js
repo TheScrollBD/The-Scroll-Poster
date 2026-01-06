@@ -50,6 +50,46 @@ document.getElementById('imageInput').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
+// ===== Step 1: URL Params Auto-fill (text/source/img) =====
+// Use like:
+// ?text=Hello%20World&source=BBC&img=https%3A%2F%2Fexample.com%2Fphoto.jpg
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+async function applyUrlParams() {
+  const text = getParam('text');
+  const source = getParam('source');
+  const img = getParam('img');
+
+  // headline
+  if (text) {
+    headlineInput.value = text;
+    updateHeadline();
+  }
+
+  // source tail (only the part after "Source:")
+  if (source) {
+    sourceTailInput.value = source;
+    updateSourceTail();
+  }
+
+  // main image from URL
+  if (img) {
+    const mainImg = document.getElementById('mainImage');
+    // if your image URL supports CORS, this helps exporting
+    mainImg.crossOrigin = 'anonymous';
+    mainImg.src = img;
+  }
+
+  // wait fonts (Bangla) to render nicely
+  if (document.fonts?.ready) await document.fonts.ready;
+}
+
+window.addEventListener('load', () => {
+  applyUrlParams().catch(err => console.error('applyUrlParams failed:', err));
+});
+
 // ===== Helpers =====
 async function waitForImages(node) {
   const imgs = node.querySelectorAll('img');
