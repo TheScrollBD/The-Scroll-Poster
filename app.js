@@ -194,3 +194,43 @@ async function downloadPNG() {
 
 document.getElementById('downloadBtn').addEventListener('click', downloadPNG);
 window.downloadPNG = downloadPNG;
+// ===== Auto-fill from URL query params =====
+// Example:
+// ?title=hello&source=BBC&img=https://example.com/a.jpg
+(async function applyQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+
+  const title = params.get('title');
+  const source = params.get('source');
+  const imgUrl = params.get('img');
+
+  // Title
+  if (title && headlineInput) {
+    headlineInput.value = decodeURIComponent(title);
+    updateHeadline();
+  }
+
+  // Source tail
+  if (source && sourceTailInput) {
+    sourceTailInput.value = decodeURIComponent(source);
+    updateSourceTail();
+  }
+
+  // Image (load from URL -> convert to dataURL)
+  if (imgUrl) {
+    try {
+      const res = await fetch(imgUrl);
+      const blob = await res.blob();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const main = document.getElementById('mainImage');
+        if (main) main.src = reader.result; // dataURL
+      };
+      reader.readAsDataURL(blob);
+    } catch (e) {
+      console.error("Failed to load img from URL:", e);
+    }
+  }
+})();
+
